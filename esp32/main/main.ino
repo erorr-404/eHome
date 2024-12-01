@@ -9,6 +9,7 @@
 
 const int DHT_PIN = 26;
 const int MAX_DATA_LENGTH = 48; // Limit list to 48 values (24 hours of data if sampled every 30 mins)
+const int MEASSUREMENT_INTERVAL = 1800000; // 30 minutes in milliseconds
 
 // Wifi name and password
 const char* ssid = "Netis 2.4G";
@@ -136,6 +137,6 @@ void readSensorTask(void *parameter) {
         } else {
             Serial.println("Failed to read from DHT sensor!");
         }
-        vTaskDelay(SAMPLE_INTERVAL / portTICK_PERIOD_MS);  // Delay for 30 minutes
+        vTaskDelay(MEASSUREMENT_INTERVAL / portTICK_PERIOD_MS);  // Delay for 30 minutes
     }
 }

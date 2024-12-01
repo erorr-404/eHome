@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        val mainWebView: WebView = findViewById(R.id.mainWebView)
+        val mainWebView: WebView = findViewById(R.id.mainWebView) // Get WebView
         mainWebView.settings.javaScriptEnabled = true // Enable JavaScript
         mainWebView.webViewClient = WebViewClient()  // Set WebViewClient to keep navigation inside the WebView
         mainWebView.addJavascriptInterface(WebInterface(this), "AndroidBridge") // Add JavaScript interface

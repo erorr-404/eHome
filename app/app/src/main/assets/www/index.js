@@ -1,7 +1,8 @@
 
-try {
-    const aList = Android.testFunction()
-    console.log(aList);
-} catch(e) {
-    console.log("Error: ", e)
+function fetchData() {
+  fetch("http://192.168.1.105/data")
+    .then((response) => response.json())
+    .then((json) => {
+      console.log(json);
+    })
 }

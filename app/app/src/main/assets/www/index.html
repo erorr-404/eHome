@@ -6,34 +6,37 @@
   <meta name="viewport"
     content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="prevent_default.css">
   <link rel="stylesheet" href="bootstrap/css/bootstrap.css">
+  <link rel="stylesheet" href="bootstrap-icons-1.11.3/font/bootstrap-icons.css">
   <title>Main Page</title>
 </head>
 
-<body class="p-4">
-  <main>
-    <h1>WebView JavaScript Interface Example</h1>
-    <button class="btn btn-primary" onclick="callAndroidFunction()">Show Toast</button>
-    <button class="btn btn-primary" onclick="getAndroidData()">Get Android Data</button>
-    <p id="androidData"></p>
-    <div class="alert alert-success" role="alert">
-      Bootstrap 5 is successfully loaded!
-    </div>
+<body>
+
+  <main class="p-4">
+    <h1>Main content</h1>
   </main>
+  <nav class="navbar fixed-bottom bg-primary">
+    <div class="container-fluid text-light row mx-auto">
+      <button class="btn btn-primary rounded-pill d-flex flex-column align-items-center col-4">
+        <i class="bi bi-clipboard-data text-center" style="font-size: x-large"></i>
+        Статистика
+      </button>
+      <button class="btn btn-primary rounded-pill d-flex flex-column align-items-center col-4">
+        <i class="bi bi-house-fill text-center" style="font-size: x-large"></i>
+        Головна
+      </button>
+      <button class="btn btn-primary rounded-pill d-flex flex-column align-items-center col-4">
+        <i class="bi bi-gear text-center" style="font-size: x-large"></i>
+        Налаштування
+      </button>
+    </div>
+  </nav>
+
   <script src="index.js"></script>
   <script src="assets/js/bootstrap.bundle.js"></script>
-  <script type="text/javascript">
-    function callAndroidFunction() {
-      // Call Android method from JavaScript
-      AndroidBridge.showToast("Hello from JavaScript!");
-    }
-
-    function getAndroidData() {
-      // Get data from Android
-      let data = AndroidBridge.getAndroidData();
-      document.getElementById("androidData").innerText = data;
-    }
-  </script>
+  <script src="prevent_default.js"></script>
 </body>
 
 </html>
