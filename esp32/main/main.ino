@@ -6,6 +6,7 @@
 #include <WiFi.h>
 #include <ESPAsyncWebServer.h>
 #include <deque>
+#include <esp_wifi.h>  // ESP-IDF WiFi API
 
 const int DHT_PIN = 26;
 const int MAX_DATA_LENGTH = 48; // Limit list to 48 values (24 hours of data if sampled every 30 mins)
@@ -14,6 +15,12 @@ const int MEASSUREMENT_INTERVAL = 1800000; // 30 minutes in milliseconds
 // Wifi name and password
 const char* ssid = "Netis 2.4G";
 const char* password = "password";
+
+// Allowed MAC addresses (whitelisted clients)
+const char* allowedMACs[] = {
+    "88:6c:60:c2:56:28",   // Redmi Note 13 Pro address
+    "4C:ED:FB:CA:C1:6D"    // PC address
+};
 
 // Create an AsyncWebServer instance on port 80
 AsyncWebServer server(80);
@@ -35,7 +42,8 @@ void setup() {
   delay(2000);
 
   // Connect to Wi-Fi
-  WiFi.begin(ssid, password);
+  WiFi.softAP("SSID", "PASSWORD");
+  esp_wifi_start();  // Start the WiFi driver
   Serial.print("Connecting to WiFi");
   
   while (WiFi.status() != WL_CONNECTED) {
@@ -47,39 +55,52 @@ void setup() {
   Serial.println("\nConnected to WiFi");
   Serial.println(WiFi.localIP());
 
+  dataMutex = xSemaphoreCreateMutex();
+  xTaskCreate(readSensorTask, "Read Sensor Task", 2048, NULL, 1, NULL);
+
   // Route to serve JSON data
   server.on("/data", HTTP_GET, [](AsyncWebServerRequest *request){
+      
+      if (isMACAllowed(request)) { // If clients MAC is in the whitelist
 
-    JsonDocument doc;
-    doc["t"] = get_temperature();
-    doc["h"] = get_humidity();
-    doc["s"] = get_status();
-    doc["n"] = get_noise();
-    doc["l"] = get_noise();
+      JsonDocument doc; // Create dinamic JSON document
+      doc["t"] = get_temperature(); // Add data to it
+      doc["h"] = get_humidity();
+      doc["s"] = get_status();
+      doc["n"] = get_noise();
+      doc["l"] = get_noise();
 
-    String jsonString;
-    serializeJson(doc, jsonString);
+      String jsonString; // Convert JSOM document to string
+      serializeJson(doc, jsonString);
 
-    request->send(200, "application/json", jsonString);
+      request->send(200, "application/json", jsonString); // Send response
+    } else {
+      request->send(403, "text/plain", "Access Denied"); // Client is not in whitelist, deny access
+    }
   });
 
   server.on("/prev", HTTP_GET, [](AsyncWebServerRequest *request){
-    JsonDocument doc;
+
+    if (isMACAllowed(request)) { // If clients MAC is in the whitelist
     
-    JsonArray data = doc.createNestedArray("data");
+      JsonDocument doc; // Create dynamic JSON document
+      JsonArray data = doc.createNestedArray("data"); // Create nested array (array in array)
     
-    xSemaphoreTake(dataMutex, portMAX_DELAY);
-    for (size_t i = 0; i < temperatureList.size(); i++) {
+      xSemaphoreTake(dataMutex, portMAX_DELAY); // Add previous data to lists
+      for (size_t i = 0; i < temperatureList.size(); i++) {
         JsonObject reading = data.createNestedObject();
         reading["t"] = temperatureList[i];
         reading["h"] = humidityList[i];
-    }
-    xSemaphoreGive(dataMutex);
+      }
+      xSemaphoreGive(dataMutex);
     
-    String output;
-    serializeJson(doc, output);
+      String output; // Convert dynamic JSON documet to string
+      serializeJson(doc, output);
 
-    request->send(200, "application/json", output);
+      request->send(200, "application/json", output); // Send response
+    } else {
+      request->send(403, "text/plain", "Access Denied"); // Client is not in whitelist, deny access
+    }
   });
 
   // Start the server
@@ -140,3 +161,30 @@ void readSensorTask(void *parameter) {
         vTaskDelay(MEASSUREMENT_INTERVAL / portTICK_PERIOD_MS);  // Delay for 30 minutes
     }
 }
+
+bool isMACAllowed(AsyncWebServerRequest *request) {
+  // Extract client's IP
+  IPAddress clientIP = request->client()->remoteIP();
+    
+  // Iterate through connected stations
+  wifi_sta_list_t stationList;
+  esp_wifi_ap_get_sta_list(&stationList);
+  for (int i = 0; i < stationList.num; i++) {
+    wifi_sta_info_t station = stationList.sta[i];
+    char macStr[18];
+    snprintf(macStr, sizeof(macStr), "%02X:%02X:%02X:%02X:%02X:%02X",
+              station.mac[0], station.mac[1], station.mac[2],
+              station.mac[3], station.mac[4], station.mac[5]);
+        
+    // Check if the MAC is allowed
+    for (const char* allowedMAC : allowedMACs) {
+      if (strcmp(macStr, allowedMAC) == 0) {
+        Serial.printf("Client allowed: MAC=%s, IP=%s\n", macStr, clientIP.toString().c_str());
+          return true;
+        }
+      }
+  }
+  Serial.printf("Access Denied: IP=%s\n", clientIP.toString().c_str());
+  return false;
+}
+
