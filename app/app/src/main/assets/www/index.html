@@ -12,31 +12,73 @@
   <title>Main Page</title>
 </head>
 
-<body>
+<body class="d-flex" style="min-height: 90vh;">
 
-  <main class="p-4">
-    <h1>Main content</h1>
+  <main id="main" class="p-2 flex-grow-1 mw-100 overflow-x-hidden">
+    
+    <div id="stats-page" class="container-fluid h-100">
+      <h1 class="text-light">Statistics</h1>
+    </div>
+
+    <div id="home-page" class="container-fluid h-100">
+      
+      <h1 class="display-2 fw-medium">Головна</h1>
+      
+      <div class="container-fluid d-flex flex-row bg-primary text-light p-2 rounded-4 my-3">
+        <div class="container-fluid" style="width: 30%;">
+          <i class="bi bi-lightbulb-fill my-auto" style="font-size: 4rem; color: var(--bs-yellow);"></i>
+        </div>
+        <div class="container-fluid d-flex flex-column justify-content-center">
+          <p class="display-2 mb-1">Світло є</p>
+          <p>З'явилось о <span>9:45</span></p>
+        </div>
+      </div>
+
+      <div class="container-fluid d-flex flex-row gap-2 justify-content-between px-0">
+        <div class="container-fluid bg-warning rounded-4 d-flex flex-row flex-nowrap py-2">
+          <i class="bi bi-thermometer-half" style="font-size: 2.5rem;"></i>
+          <div class="container-fluid d-flex flex-column justify-content-center">
+            <small>Температура</small>
+            <span class="display-4">24C</span>
+          </div>
+        </div>
+        <div class="container-fluid bg-success rounded-4 d-flex flex-row flex-nowrap py-2">
+          <i class="bi bi-moisture" style="font-size: 2.5rem;"></i>
+          <div class="container-fluid d-flex flex-column justify-content-center">
+            <small>Вологість</small>
+            <span class="display-4">50%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="settings-page" class="container-fluid h-100">
+      <h1 class="text-light">Settings</h1>
+    </div>
+    
   </main>
+
   <nav class="navbar fixed-bottom bg-primary">
     <div class="container-fluid text-light row mx-auto">
-      <button class="btn btn-primary rounded-pill d-flex flex-column align-items-center col-4">
+      <button id="stats-button" class="btn btn-primary rounded-pill d-flex flex-column align-items-center col-4">
         <i class="bi bi-clipboard-data text-center" style="font-size: x-large"></i>
         Статистика
       </button>
-      <button class="btn btn-primary rounded-pill d-flex flex-column align-items-center col-4">
-        <i class="bi bi-house-fill text-center" style="font-size: x-large"></i>
+      <button id="home-button" class="btn btn-primary rounded-pill d-flex flex-column align-items-center col-4">
+        <i class="bi bi-house text-center" style="font-size: x-large"></i>
         Головна
       </button>
-      <button class="btn btn-primary rounded-pill d-flex flex-column align-items-center col-4">
+      <button id="settings-button" class="btn btn-primary rounded-pill d-flex flex-column align-items-center col-4">
         <i class="bi bi-gear text-center" style="font-size: x-large"></i>
         Налаштування
       </button>
     </div>
   </nav>
-
+  
+  <script src="jquery.js"></script>
   <script src="index.js"></script>
   <script src="assets/js/bootstrap.bundle.js"></script>
-  <script src="prevent_default.js"></script>
+  <script src="prevent_default.js"></script> <!-- Prevent context menu to appear -->
 </body>
 
 </html>

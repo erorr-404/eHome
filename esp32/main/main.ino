@@ -69,6 +69,7 @@ void setup() {
       doc["s"] = get_status();
       doc["n"] = get_noise();
       doc["l"] = get_noise();
+      doc["o"] = getUptime(); // Time since ESP was powered
 
       String jsonString; // Convert JSOM document to string
       serializeJson(doc, jsonString);
@@ -187,4 +188,21 @@ bool isMACAllowed(AsyncWebServerRequest *request) {
   Serial.printf("Access Denied: IP=%s\n", clientIP.toString().c_str());
   return false;
 }
+
+String getUptime() {
+    // Get the number of milliseconds since the ESP32 was powered on
+    unsigned long uptimeMillis = millis();
+
+    // Convert to hours and minutes
+    unsigned long uptimeSeconds = uptimeMillis / 1000;
+    unsigned int hours = (uptimeSeconds / 3600) % 24;
+    unsigned int minutes = (uptimeSeconds / 60) % 60;
+
+    // Format the time as "HH:MM"
+    char timeBuffer[6]; // HH:MM format needs 6 characters including null terminator
+    snprintf(timeBuffer, sizeof(timeBuffer), "%02d:%02d", hours, minutes);
+
+    return String(timeBuffer);
+}
+
 
