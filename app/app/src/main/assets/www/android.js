@@ -1,18 +1,8 @@
-function callAndroidFunction() {
-    // Call Android method from JavaScript
-    AndroidBridge.showToast("Hello from JavaScript!");
-  }
+function showAndroidToast(text) { // Show Android Toast with text
+  AndroidBridge.showToast(text);
+}
 
-  function getAndroidData() {
-    // Get data from Android
-    let data = AndroidBridge.getAndroidData();
-    document.getElementById("androidData").innerText = data;
-  }
-
-
-try {
-    const aList = Android.testFunction()
-    console.log(aList);
-} catch(e) {
-    console.log("Error: ", e)
+function checkInternetConnection() { // Check if there is Internet connection
+  const internet = AndroidBridge.isInternetAvailable();
+  return internet
 }

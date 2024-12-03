@@ -8,7 +8,7 @@
 #include <deque>
 #include <esp_wifi.h>  // ESP-IDF WiFi API
 
-const int DHT_PIN = 26;
+const int DHT_PIN = 5;
 const int MAX_DATA_LENGTH = 48; // Limit list to 48 values (24 hours of data if sampled every 30 mins)
 const int MEASSUREMENT_INTERVAL = 1800000; // 30 minutes in milliseconds
 
@@ -85,11 +85,11 @@ void setup() {
     if (isMACAllowed(request)) { // If clients MAC is in the whitelist
     
       JsonDocument doc; // Create dynamic JSON document
-      JsonArray data = doc.createNestedArray("data"); // Create nested array (array in array)
+      JsonArray data = doc["data"].to<JsonArray>(); // Create nested array (array in array)
     
       xSemaphoreTake(dataMutex, portMAX_DELAY); // Add previous data to lists
       for (size_t i = 0; i < temperatureList.size(); i++) {
-        JsonObject reading = data.createNestedObject();
+        JsonObject reading = data.add<JsonObject>();
         reading["t"] = temperatureList[i];
         reading["h"] = humidityList[i];
       }

@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="bootstrap/css/bootstrap.css">
   <link rel="stylesheet" href="bootstrap-icons-1.11.3/font/bootstrap-icons.css">
   <title>Main Page</title>
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
 </head>
 
 <body class="d-flex" style="min-height: 90vh;">
@@ -30,7 +31,7 @@
         </div>
         <div class="container-fluid d-flex flex-column justify-content-center">
           <p class="display-2 mb-1">Світло є</p>
-          <p>З'явилось о <span>9:45</span></p>
+          <p>З'явилось о <span>00:00</span></p>
         </div>
       </div>
 
@@ -39,14 +40,14 @@
           <i class="bi bi-thermometer-half" style="font-size: 2.5rem;"></i>
           <div class="container-fluid d-flex flex-column justify-content-center">
             <small>Температура</small>
-            <span class="display-4">24C</span>
+            <span class="display-4">00C</span>
           </div>
         </div>
         <div class="container-fluid bg-success rounded-4 d-flex flex-row flex-nowrap py-2">
           <i class="bi bi-moisture" style="font-size: 2.5rem;"></i>
           <div class="container-fluid d-flex flex-column justify-content-center">
             <small>Вологість</small>
-            <span class="display-4">50%</span>
+            <span class="display-4">00%</span>
           </div>
         </div>
       </div>
@@ -75,9 +76,11 @@
     </div>
   </nav>
   
+  <script src="android.js"></script>
+  <script src="error_handler.js"></script>
   <script src="jquery.js"></script>
   <script src="index.js"></script>
-  <script src="assets/js/bootstrap.bundle.js"></script>
+  <script src="bootstrap/js/bootstrap.bundle.js"></script>
   <script src="prevent_default.js"></script> <!-- Prevent context menu to appear -->
 </body>
 
