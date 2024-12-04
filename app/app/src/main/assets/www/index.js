@@ -8,27 +8,39 @@ const statsButton = $("#stats-button") // Get stats, home and settings buttons
 const homeButton = $("#home-button")
 const settingsButton = $("#settings-button")
 
+const lightStatus = $("#light-status")
+const espStartTime = $("#esp-start-time")
+const tempLabel = $("#temp")
+const humidityLabel = $("#humidity")
+
 
 function fetchData() { // Fetch data from ESP32
-  $.getJSON("http://192.168.1.105/data", function (data) {
-    console.log(data);
-    showAndroidToast(data)
+  $.getJSON("http://192.168.1.101/data", function (data) {
+    console.log("Connected to ESP32");
+    try {
+      showAndroidToast("Connected to ESP32")
+    } catch {
+      console.log("You are not using mobile app");
+    }
+    
+    updateData(data)
   })
-    .fail(function () { // If got error
-      try { // Check if there is Internet connection
-        const internetAvailable = checkInternetConnection()
-        if (internetAvailable) { // If there is Internet connection, then there is no light at home
-          console.log("There is no light at home.");
-          showAndroidToast("Дома немає світла")
-        } else {
-          console.log("There is no Internet connection.");
-          showAndroidToast("Немає підключення до інтернету") // Notify user there is no Internet connection
-        }
-      } catch { // JS can use checkInternetConnection() function only with JavascriptInterface
-        console.log("This function is available only for mobile app.");
-        showAndroidToast("Щось не так із checkInternetConnection()")
+  .fail(function (jqXHR, textStatus, errorThrown) { // If got error
+    console.error("Помилка при підключенні до ESP32:", textStatus, errorThrown);
+    try { // Check if there is Internet connection
+      const internetAvailable = checkInternetConnection()
+      if (internetAvailable) { // If there is Internet connection, then there is no light at home
+        console.log("There is no light at home.");
+        showAndroidToast("Дома немає світла")
+      } else {
+        console.log("There is no Internet connection.");
+        showAndroidToast("Немає підключення до інтернету") // Notify user there is no Internet connection
       }
-    })
+    } catch { // JS can use checkInternetConnection() function only with JavascriptInterface
+      console.log("This function is available only for mobile app.");
+      showAndroidToast("Щось не так із checkInternetConnection()")
+    }
+  })
 }
 
 function updateData(json) { // Update UI data
@@ -37,6 +49,12 @@ function updateData(json) { // Update UI data
   const status = json.s
   const noise = json.n
   const light = json.l
+  const time = json.o
+
+  status == "OK" ? lightStatus.text("Є світло") : lightStatus.text("Світла нема")
+  espStartTime.text(`З'явилось ${time.split(":")[0]} годин ${time.split(":")[1]} хвилин тому.`)
+  tempLabel.text(temperature + "C")
+  humidityLabel.text(humidity + "%")
 }
 
 
