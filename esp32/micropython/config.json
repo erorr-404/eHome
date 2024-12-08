@@ -1,5 +1,5 @@
 {
     "ssid": "Netis 2.4G",
     "password": "password",
-    "meassurement_interval": "900"
+    "meassurement_interval": 600000
 }

@@ -14,8 +14,19 @@ const tempLabel = $("#temp")
 const humidityLabel = $("#humidity")
 
 
+function convertMillisecondsToTime(ms) {
+  const hours = Math.floor(ms / (1000 * 60 * 60)); // Конвертуємо в години
+  const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60)); // Залишок у хвилинах
+
+  // Форматуємо години і хвилини як двозначні числа
+  const formattedHours = String(hours).padStart(2, '0');
+  const formattedMinutes = String(minutes).padStart(2, '0');
+
+  return `${formattedHours}:${formattedMinutes}`;
+}
+
 function fetchData() { // Fetch data from ESP32
-  $.getJSON("http://192.168.1.101/data", function (data) {
+  $.getJSON("http://192.168.1.103/", function (data) {
     console.log("Connected to ESP32");
     try {
       showAndroidToast("Connected to ESP32")
@@ -50,9 +61,10 @@ function updateData(json) { // Update UI data
   const noise = json.n
   const light = json.l
   const time = json.o
+  const timeString = convertMillisecondsToTime(time)
 
   status == "OK" ? lightStatus.text("Є світло") : lightStatus.text("Світла нема")
-  espStartTime.text(`З'явилось ${time.split(":")[0]} годин ${time.split(":")[1]} хвилин тому.`)
+  espStartTime.text(`З'явилось ${timeString.split(":")[0]} годин ${timeString.split(":")[1]} хвилин тому.`)
   tempLabel.text(temperature + "C")
   humidityLabel.text(humidity + "%")
 }
