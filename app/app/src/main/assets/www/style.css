@@ -1,0 +1,9 @@
+#loadingOverlay {
+  position: fixed; /* Фіксація на весь екран */
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(255, 255, 255, 0.5); /* Напівпрозорий білий фон */
+  z-index: 1050; /* Вищий за більшість елементів Bootstrap */
+}

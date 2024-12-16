@@ -9,7 +9,9 @@ import network
 with open("config.json") as f: # Load program config
     config = json.load(f)
 
-dht_pin = Pin(5, Pin.IN) # Pin for DHT11
+print("Loaded configuration from json.")
+
+dht_pin = Pin(4, Pin.IN) # Pin for DHT11
 sound_a_pin = Pin(32, Pin.IN) # Sound Analog pin
 light_pin = Pin(33, Pin.IN) # Light sensor pin
 led = Pin(2, Pin.OUT) # Led pin
@@ -27,63 +29,63 @@ measurement_timer = Timer(0) # Timer for regular temperature and humidity measur
 time_init = time() # Time when booted up
 
 
-def get_temp_and_hum(d: DHT11): # Measures temp and hum and returns them
-    try:
-        d.measure()
-        t, h = d.temperature(), d.humidity()
-    except OSError:
-        print("Cant read temperature and humidity")
-        t, h = 0, 0
+def get_temp_and_hum(d: DHT11, retries=3): # Measures temp and hum and returns them
+    for attempt in range(retries):
+        try:
+            d.measure()
+            sleep(1)
+            t, h = d.temperature(), d.humidity()
+            return t, h
+        except OSError as e:
+            print(f"Attempt {attempt+1} to read from DHT11 failed: {e}")
+            sleep(1)  # Зачекаємо перед наступною спробою
+            t, h = 0, 0
     
-    return t, h
+    print("Error: cant read temperature and humidity after few tries.")
+    return 0, 0
 
-def get_sound(adc: ADC): # Get the sound value
-    try:
-        sound = adc.read()
-    except OSError:
-        print("Cant read from sound sensor")
-        sound = 0
+def get_sound(adc: ADC, retries=3): # Get the sound value
+    for attempt in range(retries):
+        try:
+            sound = adc.read()
+            return sound
+        except OSError as e:
+            print(f"Attempt {attempt+1} to read from sound sensor failed: {e}")
+            sound = 0
     
+    print("Error: cant read sound after few tries.")
     return sound
 
-def get_light(adc: ADC): # Get light
-    try:
-        light = adc.read()
-    except OSError:
-        light = 0
+def get_light(adc: ADC, retries=3): # Get light
+    for attempt in range(retries):
+        try:
+            light = adc.read()
+            return light
+        except OSError as e:
+            light = 0
+            print(f"Attempt {attempt+1} to read from light sensor failed: {e}")
     
+    print("Error: cant read light after few tries.")
     return light
 
-def get_light_status(value: int): # Get the string about light
-    description = ""
-    # We'll have a few thresholds, qualitatively determined
-    if value < 41:
-        description = "Dark"
-    elif value < 819:
-        description = "Dim"
-    elif value < 2048:
-        description = "Light"
-    elif value < 3277:
-        description = "Bright"
-    else:
-        description = "Very bright"
-    return description
-
 def measurement_callback(timer): # This function runs every second
+    print("Regular measurement starts...")
     t, h = get_temp_and_hum(dht)
     s = get_sound(sound_a)
     l = get_light(light_adc)
+    print("Regular measurement finished.")
     print(f"Temp: {t} Hum: {h} Sound: {s} Light: {l}")
-        
+
+
 # Make previous function run every second
 measurement_timer.init(period=config["meassurement_interval"], mode=Timer.PERIODIC, callback=measurement_callback)
 
 station = network.WLAN(network.STA_IF)
 
-print(f"Connecting to: {config["ssid"]}, {config["password"]}...")
-
 station.active(True)
+print("Activated station.")
 station.connect(config["ssid"], config["password"])
+print(f"Connecting to: {config["ssid"]}, {config["password"]}...")
 
 while station.isconnected() == False:
     led.value(not led.value())  # Перемикаємо стан LED
@@ -141,6 +143,7 @@ while True:
         )
         conn.send(response)
     
+    print("Response sent, closing connection.")
     # Закриваємо з'єднання
     conn.close()
     

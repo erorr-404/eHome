@@ -12,7 +12,20 @@ const lightStatus = $("#light-status")
 const espStartTime = $("#esp-start-time")
 const tempLabel = $("#temp")
 const humidityLabel = $("#humidity")
+const lightLabel = $("#lightness")
+const noiseLabel = $("#noise")
 
+
+// function showLoading() {
+//   $('#loadingOverlay').fadeIn(); // Плавно показуємо оверлей
+//   console.log("Overlay faded IN");
+// }
+
+function hideLoading() {
+  $('#loadingOverlay').fadeOut(); // Плавно приховуємо оверлей
+  $("#loadingOverlay").hide()
+  console.log("Overlay faded OUT");
+}
 
 function convertMillisecondsToTime(ms) {
   const hours = Math.floor(ms / (1000 * 60 * 60)); // Конвертуємо в години
@@ -22,18 +35,11 @@ function convertMillisecondsToTime(ms) {
   const formattedHours = String(hours).padStart(2, '0');
   const formattedMinutes = String(minutes).padStart(2, '0');
 
-  return `${formattedHours}:${formattedMinutes}`;
+  return (formattedHours, formattedMinutes)
 }
 
 function fetchData() { // Fetch data from ESP32
   $.getJSON("http://192.168.1.103/", function (data) {
-    console.log("Connected to ESP32");
-    try {
-      showAndroidToast("Connected to ESP32")
-    } catch {
-      console.log("You are not using mobile app");
-    }
-    
     updateData(data)
   })
   .fail(function (jqXHR, textStatus, errorThrown) { // If got error
@@ -52,6 +58,9 @@ function fetchData() { // Fetch data from ESP32
       showAndroidToast("Щось не так із checkInternetConnection()")
     }
   })
+  .always(function() {
+    hideLoading()
+  });
 }
 
 function updateData(json) { // Update UI data
@@ -61,16 +70,24 @@ function updateData(json) { // Update UI data
   const noise = json.n
   const light = json.l
   const time = json.o
-  const timeString = convertMillisecondsToTime(time)
+  const timeTuple = convertMillisecondsToTime(time)
+  const hours = timeTuple[0]
+  const mins = timeTuple[1]
 
   status == "OK" ? lightStatus.text("Є світло") : lightStatus.text("Світла нема")
-  espStartTime.text(`З'явилось ${timeString.split(":")[0]} годин ${timeString.split(":")[1]} хвилин тому.`)
+  espStartTime.text(`З'явилось ${hours} годин ${mins} хвилин тому.`)
   tempLabel.text(temperature + "C")
   humidityLabel.text(humidity + "%")
+  lightLabel.text(light)
+  noiseLabel.text(noise)
+
+  console.log("Updated interface");
+  
 }
 
 
 $(document).ready(function() { // When document is ready, hide all pages except home one
+  // showLoading()
   statsPage.hide()
   settingsPage.hide()
   homeButton.addClass("btn-info"); // Change button color

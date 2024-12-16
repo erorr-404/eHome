@@ -15,6 +15,12 @@
 
 <body class="d-flex" style="min-height: 90vh;">
 
+  <div id="loadingOverlay" class="d-flex justify-content-center align-items-center">
+    <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
   <main id="main" class="p-2 flex-grow-1 mw-100 overflow-x-hidden">
     
     <div id="stats-page" class="container-fluid h-100">
@@ -35,7 +41,7 @@
         </div>
       </div>
 
-      <div class="container-fluid d-flex flex-row gap-2 justify-content-between px-0">
+      <div class="container-fluid d-flex flex-row gap-2 justify-content-between px-0 mb-2">
         <div class="container-fluid bg-warning rounded-4 d-flex flex-row flex-nowrap py-2">
           <i class="bi bi-thermometer-half" style="font-size: 2.5rem;"></i>
           <div class="container-fluid d-flex flex-column justify-content-center">
@@ -51,6 +57,24 @@
           </div>
         </div>
       </div>
+
+      <div class="container-fluid d-flex flex-row gap-2 justify-content-between px-0 mb-2">
+        <div class="container-fluid bg-danger rounded-4 d-flex flex-row flex-nowrap py-2">
+          <i class="bi bi-lamp" style="font-size: 2.5rem;"></i>
+          <div class="container-fluid d-flex flex-column justify-content-center">
+            <small>Освітлення</small>
+            <span id="lightness" class="display-4">000</span>
+          </div>
+        </div>
+        <div class="container-fluid bg-info rounded-4 d-flex flex-row flex-nowrap py-2">
+          <i class="bi bi-soundwave" style="font-size: 2.5rem;"></i>
+          <div class="container-fluid d-flex flex-column justify-content-center">
+            <small>Шум</small>
+            <span id="noise" class="display-4">00</span>
+          </div>
+        </div>
+      </div>
+    
     </div>
 
     <div id="settings-page" class="container-fluid h-100">
@@ -76,6 +100,7 @@
     </div>
   </nav>
   
+  <script src="loading.js"></script>
   <script src="android.js"></script>
   <script src="error_handler.js"></script>
   <script src="jquery.js"></script>
