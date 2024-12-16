@@ -1,3 +1,7 @@
+# IMPORTANT: Project Status
+
+This project is paused for some time, because I don't have enough time because I need to prepare for exams.
+
 # Description
 
 This is a service for monitoring electricity, temperature, humidity, sound, light, noise at howe via mobile app.
@@ -21,8 +25,8 @@ Every time ESP32 gets request, it grabs values from DHT11 sensor and sends them 
 
 ### Microphone
 
-Not implemented yet.
+Grabs values from the Sound Sensor and sends them as response in JSON object.
 
 ### Light
 
-Not implemented yet.
+Takes value from photoresistor and returns in JSON object response.
